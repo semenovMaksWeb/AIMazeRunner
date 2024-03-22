@@ -1,3 +1,4 @@
+import { aiRun } from "./ai.js";
 import { parsingDom } from "./parsingDom.js";
 import { scrape } from "./scrape.js";
 
@@ -10,12 +11,12 @@ import { scrape } from "./scrape.js";
 //   console.log(textDom);
 // })();
 
+const path = "file:///C:/Users/Maks/Desktop/II/lab/temp/1.html";
+
 (async () => {
-  const textDom = await scrape(
-    "file:///C:/Users/Maks/Desktop/II/lab/temp/1.html",
-    null,
-    "table"
-  );
+  const textDom = await scrape(path, null, "table");
   const fixDom = `<table>${textDom}</table>`;
-  parsingDom(fixDom);
+  const schemaJson = parsingDom(fixDom);
+  console.log(schemaJson);
+  // aiRun(schemaJson);
 })();
