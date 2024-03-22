@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "puppeteer": "^22.6.0",
+    "window": "^4.2.7"
+  },
+  "name": "ai_maze_runner",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "main": "node src/main.js",
+    "dom": "node src/parsingDom.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
