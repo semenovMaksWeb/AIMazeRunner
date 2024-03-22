@@ -101,7 +101,7 @@ export async function aiRun(config, page) {
       new Error("Не правильно идет рассчет!");
     }
     acitveCell = oldCell;
-    if (Object.keys(acitveCell.position).length == 1) {
+    if (Object.keys(acitveCell.position).length == 1 || Object.keys(acitveCell.position).length == 0) {
       oldCheckXod.pop();
     }
   };
@@ -150,6 +150,14 @@ export async function aiRun(config, page) {
     let key = null;
     // нужно возвращаться назад ибо идти не куда
     if (Object.keys(acitveCell.position).length == 0) {
+      //todo test
+      if (acitveCell.indexRow == 22 && acitveCell.indexCol == 39) {
+        console.log(acitveCell);
+        console.log(oldCheckXod);
+        // break;
+      }
+      console.log(acitveCell);
+      //todo test
       // todo ошибка в html 3 { indexCol: 39, indexRow: 22, position: {} }
       await magicXodOld();
       continue;
