@@ -65,6 +65,12 @@ export async function aiRun(config, page) {
     while (true) {
       index--;
       const item = oldClick[index];
+      if (!item || position.indexCol < 0 || position.indexRow < 0) {
+        console.log("oldClick", oldClick);
+        new Error("Ошибка!");
+        break;
+      }
+      
       if (
         position.indexCol == oldCell.indexCol &&
         position.indexRow == oldCell.indexRow
@@ -85,6 +91,7 @@ export async function aiRun(config, page) {
       }
       console.log(`возвращаюсь назад: ${item}`);
       await clickKey(item);
+      oldClick.pop();
     }
 
     if (
@@ -116,7 +123,7 @@ export async function aiRun(config, page) {
   };
 
   const clickKey = async (key) => {
-    const millisecondsStart = randomInteger(500, 1000);
+    const millisecondsStart = randomInteger(100, 200);
     await delay(millisecondsStart);
     if (key == "bottom") {
       await page.keyboard.down("ArrowDown");
@@ -130,7 +137,7 @@ export async function aiRun(config, page) {
     if (key == "right") {
       await page.keyboard.down("ArrowRight");
     }
-    const millisecondsEnd = randomInteger(500, 1000);
+    const millisecondsEnd = randomInteger(100, 200);
     await delay(millisecondsEnd);
   };
 
@@ -143,6 +150,7 @@ export async function aiRun(config, page) {
     let key = null;
     // нужно возвращаться назад ибо идти не куда
     if (Object.keys(acitveCell.position).length == 0) {
+      // todo ошибка в html 3 { indexCol: 39, indexRow: 22, position: {} }
       await magicXodOld();
       continue;
     }
