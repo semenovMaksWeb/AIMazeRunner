@@ -13,9 +13,6 @@ export function parsingDom(textDom) {
 
   const saveObjectFix = () => {
     for (const elem of jsonSchema) {
-      if (elem.indexCol == 0 && elem.indexRow == 0) {
-        continue;
-      }
 
       const elemBottom = filterSchema(elem.indexRow + 1, elem.indexCol);
       

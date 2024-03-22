@@ -117,7 +117,6 @@ export async function aiRun(config, page) {
 
   const clickKey = async (key) => {
     const millisecondsStart = randomInteger(500, 1000);
-    console.log("millisecondsStart", millisecondsStart);
     await delay(millisecondsStart);
     if (key == "bottom") {
       await page.keyboard.down("ArrowDown");
@@ -132,7 +131,6 @@ export async function aiRun(config, page) {
       await page.keyboard.down("ArrowRight");
     }
     const millisecondsEnd = randomInteger(500, 1000);
-    console.log("millisecondsEnd", millisecondsEnd);
     await delay(millisecondsEnd);
   };
 
