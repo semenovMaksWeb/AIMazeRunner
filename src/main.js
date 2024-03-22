@@ -18,5 +18,5 @@ const path = "file:///C:/Users/Maks/Desktop/II/lab/temp/1.html";
   const fixDom = `<table>${textDom}</table>`;
   const schemaJson = parsingDom(fixDom);
   console.log(schemaJson);
-  // aiRun(schemaJson);
+  aiRun(schemaJson);
 })();
