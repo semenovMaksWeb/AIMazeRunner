@@ -1,10 +1,17 @@
-export function aiRun(config) {
+import { delay, randomInteger } from "./lib.js";
+export async function aiRun(config, page) {
+  // история действии
   const history = [];
+  // точка куда нужно вернуться что бы изучить др. путь
   const oldCheckXod = [];
+  // старый ходы для возвращанифя назад
   const oldClick = [];
+  // точка начала логики
   const start = config.filter((e) => e.start)[0];
+  // активная ячейка
   let acitveCell = start;
 
+  // поиск новой ячейки
   const findNewCell = (newXod) => {
     return config.filter(
       (e) =>
@@ -13,7 +20,7 @@ export function aiRun(config) {
         Object.keys(acitveCell.position).length
     )[0];
   };
-
+  // проверку куда нужно двигаться дальше
   const checkXod = (key) => {
     const newXod = {
       indexRow: acitveCell.indexRow,
@@ -41,8 +48,8 @@ export function aiRun(config) {
     }
     return newXod;
   };
-
-  const magicXodOld = () => {
+  // возвращения назад
+  const magicXodOld = async () => {
     history.push({
       action: "Магический переход!",
       params: JSON.stringify(oldCheckXod[oldCheckXod.length - 1]),
@@ -58,7 +65,10 @@ export function aiRun(config) {
     while (true) {
       index--;
       const item = oldClick[index];
-      if(position.indexCol == oldCell.indexCol && position.indexRow == oldCell.indexRow){
+      if (
+        position.indexCol == oldCell.indexCol &&
+        position.indexRow == oldCell.indexRow
+      ) {
         break;
       }
       if (item == "bottom") {
@@ -71,22 +81,25 @@ export function aiRun(config) {
         position.indexCol--;
       }
       if (item == "right") {
-        position.indexRow++;
+        position.indexCol++;
       }
+      console.log(`возвращаюсь назад: ${item}`);
+      await clickKey(item);
     }
 
     if (
       acitveCell.indexRow != oldCell.indexRow &&
-      acitveCell.indexCol == oldCell.indexCol
+      acitveCell.indexCol != oldCell.indexCol
     ) {
       new Error("Не правильно идет рассчет!");
     }
-    // acitveCell = oldCell;
+    acitveCell = oldCell;
     if (Object.keys(acitveCell.position).length == 1) {
       oldCheckXod.pop();
     }
   };
 
+  // обратное направление используется для удаление старый путей
   const oppositePosition = (key) => {
     if (key == "left") {
       return "right";
@@ -102,24 +115,46 @@ export function aiRun(config) {
     }
   };
 
+  const clickKey = async (key) => {
+    const millisecondsStart = randomInteger(500, 1000);
+    console.log("millisecondsStart", millisecondsStart);
+    await delay(millisecondsStart);
+    if (key == "bottom") {
+      await page.keyboard.down("ArrowDown");
+    }
+    if (key == "top") {
+      await page.keyboard.down("ArrowUp");
+    }
+    if (key == "left") {
+      await page.keyboard.down("ArrowLeft");
+    }
+    if (key == "right") {
+      await page.keyboard.down("ArrowRight");
+    }
+    const millisecondsEnd = randomInteger(500, 1000);
+    console.log("millisecondsEnd", millisecondsEnd);
+    await delay(millisecondsEnd);
+  };
+
   while (true) {
     if (acitveCell.end) {
+      // мы нашли выход
+      console.log("победа?!");
       break;
     }
     let key = null;
-
+    // нужно возвращаться назад ибо идти не куда
     if (Object.keys(acitveCell.position).length == 0) {
-      magicXodOld();
+      await magicXodOld();
       continue;
     }
-
+    // 1 путь куда идти
     if (Object.keys(acitveCell.position).length == 1) {
       key = Object.keys(acitveCell.position)[0];
     } else {
-      console.log("oldCheckXodSave", acitveCell);
+      // несколько путей  + сохраняем точку
       oldCheckXod.push(acitveCell);
-      console.log(acitveCell);
-
+      // определяем направление
       if ("left" in acitveCell.position) {
         key = "left";
       }
@@ -136,25 +171,27 @@ export function aiRun(config) {
         key = "top";
       }
     }
-
+    // направление нет идем назад
     if (key == null) {
-      magicXodOld();
+      await magicXodOld();
       continue;
     }
-
+    // идем в новую клетку
     const newXod = checkXod(key);
     const cellNew = findNewCell(newXod);
 
-    if (cellNew) {
-      delete acitveCell.position[key];
-      delete cellNew.position[oppositePosition(key)];
-      acitveCell = cellNew;
-      history.push({
-        action: "переход на колонку",
-        params: JSON.stringify(cellNew),
-      });
-    }
+    // есть куда идти переходим
+    delete acitveCell.position[key];
+    delete cellNew.position[oppositePosition(key)];
+    acitveCell = cellNew;
+    history.push({
+      action: "переход на колонку",
+      params: JSON.stringify(cellNew),
+    });
+    console.log(`движение в ${key}`);
+    await clickKey(key);
   }
-  console.log("history --------- \n");
-  console.log(history);
+
+  // console.log("history --------- \n");
+  // console.log(history);
 }

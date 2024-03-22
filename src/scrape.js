@@ -22,5 +22,5 @@ export async function scrape(url, selectArrayLoader, returnSelector) {
     return document.querySelector(returnSelector).innerHTML;
   }, returnSelector);
 
-  return result;
+  return { result, page };
 }
