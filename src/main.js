@@ -11,7 +11,12 @@ import { ENV } from "../env.js";
     ENV.RETURN_HTML_DOM
   );
   // парсинг может отличаться от страницы с лабиринтов
-  const schemaJson = parsingDom(result);
+  let schemaJson = null;
+  if (ENV.PASRING_ING) {
+    await page.screenshot({ path: "temp/fullpage.png", fullPage: true });
+  } else {
+    schemaJson = parsingDom(result);
+  }
   // ai который из schem вызывает логику перемещения
   await aiRun(schemaJson, page);
 })();

@@ -10,5 +10,6 @@ export const ENV = {
   // случайное время ожидание после клика от MIN до MAX
   DElAY_POST: { MIN: 100, MAX: 200 },
   HISTORY: false,
-  CONSOLE: true
+  CONSOLE: true,
+  PASRING_ING: false
 };

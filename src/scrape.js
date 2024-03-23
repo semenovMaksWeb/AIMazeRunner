@@ -1,7 +1,20 @@
 import puppeteer from "puppeteer";
+import { ENV } from "../env.js";
 
-export async function scrape(url, selectArrayLoader, returnSelector) {
-  const browser = await puppeteer.launch({ headless: false });
+export async function scrape(
+  url,
+  selectArrayLoader,
+  returnSelector,
+  clickSelector
+) {
+  const browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: {
+      width: 1980,
+      height: 1080,
+    },
+  });
+  
   const page = await browser.newPage();
 
   if (!url || !returnSelector) {
@@ -15,6 +28,12 @@ export async function scrape(url, selectArrayLoader, returnSelector) {
       await page.waitForSelector(select, {
         visible: true,
       });
+    }
+  }
+
+  if (Array.isArray(clickSelector)) {
+    for (const select of clickSelector) {
+      await page.click(select);
     }
   }
 
