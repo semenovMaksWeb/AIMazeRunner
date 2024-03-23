@@ -2,7 +2,7 @@ export const ENV = {
   // сайт куда зайди
   PATH: "https://wayout.zone/ru/",
   // какой dom элементы нужно дождаться
-  INIT_DOM_SELECTOR: ["#startMazeBtn"],
+  INIT_DOM_SELECTOR: ["#mazeCanvas"],
   CLICK_DOM_SELECTOR: ["#startMazeBtn"],
   // из чего получить верстку лабиринта
   // случайное время ожидание перед кликом от MIN до MAX

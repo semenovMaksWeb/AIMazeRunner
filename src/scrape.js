@@ -14,7 +14,7 @@ export async function scrape(
       height: 1080,
     },
   });
-  
+
   const page = await browser.newPage();
 
   if (!url || !returnSelector) {
@@ -22,6 +22,15 @@ export async function scrape(
   }
 
   await page.goto(url);
+
+  if (Array.isArray(clickSelector)) {
+    for (const select of clickSelector) {
+      await page.waitForSelector(select, {
+        visible: true,
+      });
+      await page.click(select);
+    }
+  }
 
   if (Array.isArray(selectArrayLoader)) {
     for (const select of selectArrayLoader) {
@@ -31,14 +40,10 @@ export async function scrape(
     }
   }
 
-  if (Array.isArray(clickSelector)) {
-    for (const select of clickSelector) {
-      await page.click(select);
-    }
-  }
-
   const result = await page.evaluate((returnSelector) => {
-    return document.querySelector(returnSelector).innerHTML;
+    if (returnSelector) {
+      return document.querySelector(returnSelector).innerHTML;
+    }
   }, returnSelector);
 
   return { result, page };

@@ -8,7 +8,8 @@ import { ENV } from "../env.js";
   const { result, page } = await scrape(
     ENV.PATH,
     ENV.INIT_DOM_SELECTOR,
-    ENV.RETURN_HTML_DOM
+    ENV.RETURN_HTML_DOM,
+    ENV.CLICK_DOM_SELECTOR
   );
   // парсинг может отличаться от страницы с лабиринтов
   let schemaJson = null;
