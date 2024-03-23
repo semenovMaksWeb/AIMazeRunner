@@ -1,12 +1,17 @@
 import { aiRun } from "./ai.js";
 import { parsingDom } from "./parsingDom.js";
 import { scrape } from "./scrape.js";
-
-// const path = "file:///C:/Users/Maks/Desktop/II/lab/temp/3.html";
-const path = "http://lohmatik.ru/Lohmatik/str1_2_13.php";
+import { ENV } from "../env.js";
 
 (async () => {
-  const { result, page } = await scrape(path, ["#labdiv"], "#labdiv");
+  // Открыть браузер
+  const { result, page } = await scrape(
+    ENV.PATH,
+    ENV.INIT_DOM_SELECTOR,
+    ENV.RETURN_HTML_DOM
+  );
+  // парсинг может отличаться от страницы с лабиринтов
   const schemaJson = parsingDom(result);
+  // ai который из schem вызывает логику перемещения
   await aiRun(schemaJson, page);
 })();

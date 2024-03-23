@@ -1,7 +1,10 @@
-import { delay, randomInteger } from "./lib.js";
+import { ENV } from "../env.js";
+ import { historyStore } from "./history.js";
+import { delay, randomInteger, CustomConsole } from "./lib.js";
+
 export async function aiRun(config, page) {
+  const { getHistory, saveHistory } = historyStore();
   // история действии
-  const history = [];
   // точка куда нужно вернуться что бы изучить др. путь
   const oldCheckXod = [];
   // старый ходы для возвращанифя назад
@@ -50,7 +53,7 @@ export async function aiRun(config, page) {
   };
   // возвращения назад
   const magicXodOld = async () => {
-    history.push({
+    saveHistory({
       action: "Магический переход!",
       params: JSON.stringify(oldCheckXod[oldCheckXod.length - 1]),
     });
@@ -70,26 +73,31 @@ export async function aiRun(config, page) {
         new Error("Ошибка!");
         break;
       }
-      
+
       if (
         position.indexCol == oldCell.indexCol &&
         position.indexRow == oldCell.indexRow
       ) {
         break;
       }
+
       if (item == "bottom") {
         position.indexRow++;
       }
+
       if (item == "top") {
         position.indexRow--;
       }
+
       if (item == "left") {
         position.indexCol--;
       }
+
       if (item == "right") {
         position.indexCol++;
       }
-      console.log(`возвращаюсь назад: ${item}`);
+
+      CustomConsole(`возвращаюсь назад: ${item}`);
       await clickKey(item);
       oldClick.pop();
     }
@@ -101,7 +109,10 @@ export async function aiRun(config, page) {
       new Error("Не правильно идет рассчет!");
     }
     acitveCell = oldCell;
-    if (Object.keys(acitveCell.position).length == 1 || Object.keys(acitveCell.position).length == 0) {
+    if (
+      Object.keys(acitveCell.position).length == 1 ||
+      Object.keys(acitveCell.position).length == 0
+    ) {
       oldCheckXod.pop();
     }
   };
@@ -122,8 +133,12 @@ export async function aiRun(config, page) {
     }
   };
 
+  // вынести симуляцию кликов
   const clickKey = async (key) => {
-    const millisecondsStart = randomInteger(100, 200);
+    const millisecondsStart = randomInteger(
+      ENV.DELAY_PRE.MIN,
+      ENV.DELAY_PRE.MAX
+    );
     await delay(millisecondsStart);
     if (key == "bottom") {
       await page.keyboard.down("ArrowDown");
@@ -137,7 +152,10 @@ export async function aiRun(config, page) {
     if (key == "right") {
       await page.keyboard.down("ArrowRight");
     }
-    const millisecondsEnd = randomInteger(100, 200);
+    const millisecondsEnd = randomInteger(
+      ENV.DElAY_POST.MIN,
+      ENV.DElAY_POST.MAX
+    );
     await delay(millisecondsEnd);
   };
 
@@ -150,15 +168,6 @@ export async function aiRun(config, page) {
     let key = null;
     // нужно возвращаться назад ибо идти не куда
     if (Object.keys(acitveCell.position).length == 0) {
-      //todo test
-      if (acitveCell.indexRow == 22 && acitveCell.indexCol == 39) {
-        console.log(acitveCell);
-        console.log(oldCheckXod);
-        // break;
-      }
-      console.log(acitveCell);
-      //todo test
-      // todo ошибка в html 3 { indexCol: 39, indexRow: 22, position: {} }
       await magicXodOld();
       continue;
     }
@@ -198,14 +207,12 @@ export async function aiRun(config, page) {
     delete acitveCell.position[key];
     delete cellNew.position[oppositePosition(key)];
     acitveCell = cellNew;
-    history.push({
+    saveHistory({
       action: "переход на колонку",
       params: JSON.stringify(cellNew),
     });
-    console.log(`движение в ${key}`);
+    CustomConsole(`движение в ${key}`);
     await clickKey(key);
   }
-
-  // console.log("history --------- \n");
-  // console.log(history);
+  getHistory();
 }
